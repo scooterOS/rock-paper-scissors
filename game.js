@@ -63,6 +63,10 @@ function playRound() {
     return result;
 }
 
+function showResults(playerScore, computerScore) {
+    alert(`Final Score:\nHuman = ${playerScore}\nComputer = ${computerScore}`);
+}
+
 function playGame() {
     let playerScore = 0;
     let computerScore = 0;
@@ -75,6 +79,7 @@ function playGame() {
         playerScore += result == "win";
         computerScore += result == "lose";
     }
+    showResults(playerScore, computerScore);
 }
 
 playGame();

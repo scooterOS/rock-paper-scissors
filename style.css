@@ -1,0 +1,30 @@
+body {
+    color: white;
+    background-color: rgb(63, 63, 63);
+}
+
+p {
+    display: inline;
+}
+
+.result {
+    margin: 20px auto;
+    height: 20px;
+}
+
+.score {
+    margin: 20px auto 50px;
+    height: 20px;
+}
+
+.rock-btn {
+    background-color: crimson;
+}
+
+.paper-btn {
+    background-color: greenyellow;
+}
+
+.scissors-btn {
+    background-color: cornflowerblue;
+}

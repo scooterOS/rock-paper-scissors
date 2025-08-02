@@ -1,27 +1,11 @@
-function getHumanChoice() {
-    // prompt human for choice
-    humanChoice = prompt("Enter your choice:\n(rock, paper, scissors)").toLowerCase();
+let PLAYER_SCORE = 0;
+let COMPUTER_SCORE = 0;
+let ROUND = 0;
+let GAME_OVER = false;
 
-    // return choice if its valid
-    if (["rock", "paper", "scissors"].includes(humanChoice)) return humanChoice;
-
-    // otherwise, inform the human of their invalid choice and try again
-    alert(`Error: ${humanChoice} is not an option`);
-    return getHumanChoice();
-}
 
 function getComputerChoice() {
-
-    computerChoice = Math.floor(Math.random() * 3);
-    switch (computerChoice) {
-        case 0:
-            return "rock";
-        case 1:
-            return "paper";
-        case 2:
-            return "scissors";
-    }
-    throw new Error("The computer couldn't make up its mind.");
+    return ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)];
 }
 
 function calculateResult(humanChoice, computerChoice) {
@@ -31,55 +15,92 @@ function calculateResult(humanChoice, computerChoice) {
     if (humanChoice == "paper") return computerChoice == "rock" ? "win" : "lose";
     if (humanChoice == "scissors") return computerChoice == "paper" ? "win" : "lose";
     
-    throw new Error("Could not determine result of the round.")
+    throw new Error("Could not determine result of the round.");
 }
 
-function informHuman(result, computerChoice) {
+function submitResult(result, humanChoice, computerChoice) {
+
+    const resultElem = document.querySelector(".result");
+
     switch (result) {
         case "win":
-            return alert("You won the round!\n" + "Computer's choice: " + computerChoice);
+            const humanScoreElem = document.querySelector(".human-score");
+
+            PLAYER_SCORE++;
+            humanScoreElem.textContent = PLAYER_SCORE; 
+            resultElem.textContent = `You won the round! ${humanChoice} beats ${computerChoice}.`;
+            break;
         case "lose":
-            return alert("You lost the round!\n" + "Computer's choice: " + computerChoice);
+            const computerScoreElem = document.querySelector(".computer-score");
+
+            COMPUTER_SCORE++;
+            computerScoreElem.textContent = COMPUTER_SCORE;
+            resultElem.textContent = `You lost the round. ${computerChoice} beats ${humanChoice}.`;
+            break;
         case "tie":
-            return alert("You tied the round...\n" + "Computer's choice: " + computerChoice);
+            resultElem.textContent = `You tied the round... You both choice ${humanChoice}`;
+            break;
+        default:
+            throw new Error(`Invalid result of the round: ${result}`);
     }
-    throw new Error("Invalid result of the round.")
+    ROUND++;
+    if (ROUND >= 5) endGame();
 }
 
-function playRound() {
-    // get player's choice
-    const humanChoice = getHumanChoice();
+function playRound(humanChoice) {
+    
+    if (GAME_OVER) return;
 
-    // get computer's choice
     const computerChoice = getComputerChoice();
-
-    // calculate the outcome
     const result = calculateResult(humanChoice, computerChoice);
 
-    // inform human of the outcome
-    informHuman(result, computerChoice);
-
-    // return result of the round: win, lose, tie
-    return result;
+    submitResult(result, humanChoice, computerChoice);
 }
 
-function showResults(playerScore, computerScore) {
-    alert(`Final Score:\nHuman = ${playerScore}\nComputer = ${computerScore}`);
+function resetGame() {
+    PLAYER_SCORE = 0;
+    COMPUTER_SCORE = 0;
+    ROUND = 0;
+    GAME_OVER = false;
+
+    const resultElem = document.querySelector(".result");
+    resultElem.textContent = "";
+
+    const humanScoreElem = document.querySelector(".human-score");
+    humanScoreElem.textContent = "0";
+
+    const computerScoreElem = document.querySelector(".computer-score");
+    computerScoreElem.textContent = "0";
 }
 
-function playGame() {
-    let playerScore = 0;
-    let computerScore = 0;
-    
-    // play 5 total games of rock-paper-scissors
-    for (let i = 0; i < 5; i++) {
-        var result = playRound();
+function endGame() {
+    GAME_OVER = true;
+    const resultElem = document.querySelector(".result");
 
-        // add to the winner's score
-        playerScore += result == "win";
-        computerScore += result == "lose";
+    if (PLAYER_SCORE > COMPUTER_SCORE) {
+        resultElem.textContent = "Congratulations! You won the game.";
     }
-    showResults(playerScore, computerScore);
+    else if (COMPUTER_SCORE > PLAYER_SCORE) {
+        resultElem.textContent = "You lost the game. Better luck next time.";
+    }
+    else {
+        resultElem.textContent = "You tied the game. You are ok in my book.";
+    }
+
 }
 
-playGame();
+function setupGame() {
+    const rockBtn = document.querySelector(".rock-btn");
+    rockBtn.addEventListener("click", function(){ playRound("rock") });
+
+    const paperBtn = document.querySelector(".paper-btn");
+    paperBtn.addEventListener("click", function(){ playRound("paper") });
+
+    const scissorsBtn = document.querySelector(".scissors-btn");
+    scissorsBtn.addEventListener("click", function(){ playRound("scissors") });
+
+    const newGameBtn = document.querySelector(".new-game-btn");
+    newGameBtn.addEventListener("click", resetGame);
+}
+
+setupGame();
